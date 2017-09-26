@@ -1,7 +1,5 @@
 # Action Runner
 
-## Description
-
 Action Runner let's you create simple framework for running nested actions. This works similarly to applications such as ember-cli and express-generator. With this framework, you can easily and dynamically create commands such as this:
 
     action generate template MyTemplate
