@@ -4,21 +4,13 @@ import { readdir, stat,  } from 'fs';
 import { join } from 'path';
 
 /**
- * Get rid of the first to arguments under process.argv
- */
-function cleanArgs() {
-    process.argv.shift();
-    process.argv.shift();
-}
-
-/**
  * Handles traversing the actions passed in.
  * 
  * @param   action  The name of the action (i.e., the next argument passed in)
  * @param   cwd     The current directory the switch is in
  * @param   setup   The current setup object
  */
-class Switch {
+export class Switch {
     action: string;
     cwd: string;
     setup: object;
@@ -37,7 +29,7 @@ class Switch {
         this.getNextAction()
             .then((next_action: string) => {
                 // Get the handler for the directory if there is one
-                let handler = this.runHandler(this.path, next_action);
+                let handler = this.getHandler(this.path, next_action);
 
                 // Determine if our action is defined by a directory or a file
                 if (this.type == 'directory' && handler.canRun()) {
@@ -89,7 +81,7 @@ class Switch {
      * @param path          The path of the handler to run, without /index.js
      * @param next_action   The next action to be run
      */
-    private runHandler (path: string, next_action: string | undefined): Handler {
+    private getHandler (path: string, next_action: string | undefined): Handler {
         let ActionHandler;
         let file = join(path, 'index');
 
@@ -238,7 +230,7 @@ export class Handler {
      * 
      * @param setup The current setup object as of current
      */
-    setup (setup: any): Promise<any> | object{
+    setup (setup: any): Promise<any> | object {
         return setup;
     }
 
@@ -292,9 +284,3 @@ export class Handler {
         });
     }
 }
-
-// Get rid of the first two arguments
-cleanArgs();
-
-// Create a new Switch at the root level of actions
-new Switch('', join(__dirname, 'actions'));

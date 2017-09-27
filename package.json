@@ -1,15 +1,25 @@
 {
   "name": "action-runner",
   "version": "1.0.0",
-  "description": "A simple action runner",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "A simple command runner application",
+  "main": "built/index.js",
+  "bin": {
+    "action": "./built/bin/action.js"
   },
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "test": "tsc & mocha ./built/test"
+  },
+  "author": "Jeremy Overman",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeremyoverman/action-runner"
+  },
+  "license": "MIT",
   "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/mocha": "^2.2.43",
     "@types/node": "^8.0.31",
+    "chai": "^4.1.2",
     "source-map-support": "^0.4.18"
   }
 }
