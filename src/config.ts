@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'fs';
 const CONFIG_FILE = './config.json';
 
-function replaceConfig (new_config: IConfig) {
+function replaceConfig (new_config: IConfig): Promise<IConfig> {
     return new Promise ((resolve, reject) => {
         let new_json = JSON.stringify(new_config, null, 4);
 
@@ -19,32 +19,50 @@ export interface IActions {
 
 export interface IConfig {
     actions: IActions;
+    excludes: string
 }
 
 export const default_config: IConfig = {
-    actions: {}
+    actions: {},
+    excludes: "index.js|.map$|node_modules|.json$"
 };
 
 export function registerNewAction (name: string, path: string) {
     if (!name || !path) return false;
 
-    let config = getConfig();
-    config.actions[name] = path;
-
-    replaceConfig(config);
+    getConfig().then((config) => {
+        config.actions[name] = path;
+        replaceConfig(config);
+    });
 }
 
 export function removeAction (name: string) {
     if (!name) return false;
 
-    let config = getConfig();
-    delete config.actions[name];
+    getConfig().then((config) => {
+        delete config.actions[name];
 
-    replaceConfig(config);
+        replaceConfig(config);
+    });
 }
 
-export function getConfig() {
-    let config: IConfig = require('../config.json');
+export function createConfig(): Promise<IConfig> {
+    return replaceConfig(default_config);
+}
 
-    return Object.assign(default_config, config);
+export function getConfig(): Promise<IConfig> {
+    return new Promise((resolve, reject) => {
+        let config: IConfig;
+
+        try {
+            config = Object.assign(default_config, require('../config.json'));
+            resolve(config);
+        } catch (e) {
+            console.log('Config does not exist. Creating new one...');
+
+            createConfig().then((con: IConfig) => {
+                resolve(con);
+            });
+        }
+    });
 }

@@ -2,6 +2,7 @@ require('source-map-support').install();
 
 import { readdir, stat,  } from 'fs';
 import { join } from 'path';
+import { getConfig } from './config';
 
 /**
  * Handles traversing the actions passed in.
@@ -263,21 +264,25 @@ export class Handler {
         readdir(this.cwd, (err, files) => {
             if (err) return console.log(err);
             
-            for (let i = 0; i < files.length; i++) {
-                let command = files[i];
+            getConfig().then((config) => {
+                let excluded = new RegExp(config.excludes);
 
-                // Don't show this handler or .map files
-                if (/index.js|\.map$/.test(command)) continue;
+                for (let i = 0; i < files.length; i++) {
+                    let command = files[i];
 
-                let description = this.getDescription(command);
+                    // Don't show excluded files
+                    if (excluded.test(command)) continue;
 
-                // Get rid of the extension of files
-                let match = command.match(/(.*).js/)
-                if (match) command = match[1];
+                    let description = this.getDescription(command);
 
-                // Print the log
-                console.log(`  ${command}\t${description}`);
-            }
+                    // Get rid of the extension of files
+                    let match = command.match(/(.*).js/)
+                    if (match) command = match[1];
+
+                    // Print the log
+                    console.log(`  ${command}\t${description}`);
+                }
+            });
 
             // Print and extra newline
             console.log();

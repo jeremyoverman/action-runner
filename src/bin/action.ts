@@ -2,7 +2,7 @@
 
 import { Switch }  from '../index';
 import { join } from 'path';
-import { getConfig, IActions } from '../config';
+import { getConfig, IActions, IConfig } from '../config';
 import { OptionHandler } from '../optionHandler';
 import { options } from '../options';
 
@@ -46,10 +46,7 @@ function getParentActionDirectory (actions: IActions): string | null {
 /**
  * The main runner function
  */
-function run () {
-    // Get the config
-    let config = getConfig();
-
+function run (config: IConfig) {
     // Get rid of the first two arguments
     cleanArgs();
 
@@ -74,5 +71,8 @@ function run () {
     }
 }
 
-// Run the runner function
-run();
+// Get the config
+let config = getConfig().then((config) => {
+    // Then run the runner function
+    run(config);
+});
