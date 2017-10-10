@@ -27,6 +27,8 @@ function printHelp (actions: IActions) {
     }
 
     console.log();
+
+
 }
 
 /**
@@ -51,8 +53,8 @@ function run (config: IConfig) {
     cleanArgs();
 
     // Get a new OptionHandler with the action-runner options
-    let optionHandler = new OptionHandler(options);
-
+    let optionsDirectory = join (__dirname, '..');
+    let optionHandler = new OptionHandler(optionsDirectory);
     if (optionHandler.hasOptions) {
         // If it has options, run them and end the application
         return optionHandler.runAllOptions();

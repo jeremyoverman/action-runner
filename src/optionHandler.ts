@@ -1,3 +1,7 @@
+import { join } from 'path';
+import { readdir } from 'fs';
+import { getConfig } from './config';
+
 /**
  * Examples:
  *      -option
@@ -7,7 +11,7 @@
 const OPTION_REGEX = /^--?([\w\d-]*)/;
 
 export interface IOptionMap {
-    [option: string]: Function;
+    [option: string]: OptionRunner;
 }
 
 export interface IOptions {
@@ -21,14 +25,51 @@ export interface IOptions {
  * @param   optionMap   an option to function mapping
  */
 export class OptionHandler {
+    directory: string;
     optionMap: IOptionMap;
     options: IOptions[];
     hasOptions: boolean;
 
-    constructor (optionMap: IOptionMap) {
-        this.optionMap = optionMap;
+    constructor (directory: string) {
+        this.directory = join(directory, 'options');
         this.options = this.parseOptions();
         this.hasOptions = Boolean(this.options.length)
+        this.optionMap = {};
+
+        this.createOptionMap();
+    }
+
+    loadRunner (file: string) {
+        let path = join(this.directory, file);
+        let runner;
+
+        try {
+            runner = new (require(path).default);
+        } catch (err) {
+            runner = new OptionRunner();
+        }
+
+        return runner;
+    }
+
+    createOptionMap () {
+        return new Promise((resolve, reject) => {
+            readdir(this.directory, (err, files) => {
+                for (let idx in files) {
+                    let file = files[idx];
+                    let match = file.match(/(.*)\.js$/);
+
+                    if (!match) continue;
+
+                    let option = match[1];
+                    let runner = this.loadRunner(file);
+
+                    this.optionMap[option] = runner;
+                }
+
+                resolve();
+            });
+        });
     }
 
     /**
@@ -90,10 +131,12 @@ export class OptionHandler {
      * Run all functions in the option map
      */
     runAllOptions () {
-        for (let i = 0; i < this.options.length; i++) {
-            let option = this.options[i];
-            this.runOption(option.option, option.args);
-        }
+        this.createOptionMap().then(() => {
+            for (let i = 0; i < this.options.length; i++) {
+                let option = this.options[i];
+                this.runOption(option.option, option.args);
+            }
+        });
     }
 
     /**
@@ -103,10 +146,18 @@ export class OptionHandler {
      */
     runOption (option: string, args: string[]) {
         if (this.optionMap[option]) {
-            this.optionMap[option](args);
+            this.optionMap[option].handler(args);
         } else {
             // TODO: replace this with a better helper function
             console.log(`Unkown option "${option}"`);
         }
+    }
+}
+
+export class OptionRunner {
+    description: string;
+
+    handler (params: any[]) {
+        console.log('Option does not exist');
     }
 }
