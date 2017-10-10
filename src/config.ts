@@ -1,5 +1,7 @@
 import { readFile, writeFile } from 'fs';
-const CONFIG_FILE = './config.json';
+import { join } from 'path';
+
+const CONFIG_FILE = join(__dirname, 'config.json');
 
 function replaceConfig (new_config: IConfig): Promise<IConfig> {
     return new Promise ((resolve, reject) => {
@@ -55,7 +57,7 @@ export function getConfig(): Promise<IConfig> {
         let config: IConfig;
 
         try {
-            config = Object.assign(default_config, require('../config.json'));
+            config = Object.assign(default_config, require(CONFIG_FILE));
             resolve(config);
         } catch (e) {
             console.log('Config does not exist. Creating new one...');
