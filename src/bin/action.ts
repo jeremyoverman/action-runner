@@ -65,7 +65,8 @@ function run (config: IConfig) {
 
     if (parentActionDirectory) {
         // Create the Switch to handle the rest
-        new Switch('', parentActionDirectory);
+        let sw = new Switch('', parentActionDirectory);
+        sw.handleNextAction();
     } else {
         // If we couldn't get a parent directory, then then the action
         // doesn't exist in the config.

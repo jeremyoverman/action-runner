@@ -25,27 +25,6 @@ export class Switch {
 
         // If we don't have a setup object yet, initialize it to an empty object
         this.setup = setup || {};
-
-        // Handle the next action
-        this.getNextAction()
-            .then((next_action: string) => {
-                // Get the handler for the directory if there is one
-                let handler = this.getHandler(this.path, next_action);
-
-                // Determine if our action is defined by a directory or a file
-                if (this.type == 'directory' && handler.canRun()) {
-                    this.handleDirectory(handler, next_action);
-                } else if (this.type === 'file') {
-                    this.handleFile();
-                } else {
-                    // If it's a directory, but it can't be run with the current arguments,
-                    // print a help file.
-                    handler.printHelp();
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
     }
 
     /**
@@ -105,6 +84,31 @@ export class Switch {
     }
 
     /**
+     * Run the next action
+     */
+    handleNextAction () {
+        // Handle the next action
+        this.getNextAction().then((next_action: string) => {
+            // Get the handler for the directory if there is one
+            let handler = this.getHandler(this.path, next_action);
+
+            // Determine if our action is defined by a directory or a file
+            if (this.type == 'directory' && handler.canRun()) {
+                this.handleDirectory(handler, next_action);
+            } else if (this.type === 'file') {
+                this.handleFile();
+            } else {
+                // If it's a directory, but it can't be run with the current arguments,
+                // print a help file.
+                handler.printHelp();
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
+
+    /**
      * Get the next action
      */
     getNextAction () {
@@ -146,6 +150,7 @@ export class Switch {
         Promise.resolve(result).then((setup: any) => {
             // Create a new switch with the next action with the new setup
             let next = new Switch(next_action, this.path, setup);
+            next.handleNextAction();
         });
     }
 
