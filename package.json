@@ -2,9 +2,9 @@
   "name": "action-runner",
   "version": "1.0.0",
   "description": "A simple command runner application",
-  "main": "built/index.js",
+  "main": "built/switch.js",
   "bin": {
-    "action": "./built/bin/action.js"
+    "action": "./built/bin/main.js"
   },
   "scripts": {
     "test": "tsc & mocha ./built/test"

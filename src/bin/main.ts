@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
-import { Switch }  from '../index';
+import { Switch, IActionSetup }  from '../switch';
 import { join } from 'path';
 import { getConfig, IActions, IConfig } from '../config';
-import { OptionHandler } from '../optionHandler';
-import { options } from '../options';
+import { Options } from '../options';
 
 /**
  * Get rid of the first to arguments under process.argv
@@ -27,8 +26,6 @@ function printHelp (actions: IActions) {
     }
 
     console.log();
-
-
 }
 
 /**
@@ -52,20 +49,19 @@ function run (config: IConfig) {
     // Get rid of the first two arguments
     cleanArgs();
 
-    // Get a new OptionHandler with the action-runner options
-    let optionsDirectory = join (__dirname, '..');
-    let optionHandler = new OptionHandler(optionsDirectory);
-    if (optionHandler.hasOptions) {
-        // If it has options, run them and end the application
-        return optionHandler.runAllOptions();
-    }
-
     // Get the parent directory for the given action
     let parentActionDirectory = getParentActionDirectory(config.actions);
 
+    let setup: IActionSetup = {
+        flags: []
+    }
+
     if (parentActionDirectory) {
         // Create the Switch to handle the rest
-        let sw = new Switch('', parentActionDirectory);
+        let options = new Options(parentActionDirectory, setup);
+        setup = options.parseOptions();
+
+        let sw = new Switch('', parentActionDirectory, setup);
         sw.handleNextAction();
     } else {
         // If we couldn't get a parent directory, then then the action

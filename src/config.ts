@@ -25,8 +25,10 @@ export interface IConfig {
 }
 
 export const default_config: IConfig = {
-    actions: {},
-    excludes: "index.js|.map$|node_modules|.json$"
+    actions: {
+        runner: join(__dirname, 'runner')
+    },
+    excludes: "^index.js$|.map$|^node_modules$|.json$|^options$"
 };
 
 export function registerNewAction (name: string, path: string) {

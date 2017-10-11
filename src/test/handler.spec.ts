@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Handler } from '../index';
+import { Handler } from '../switch';
 
 describe('The Handler Object', () => {
     it('looks like a Handler object', () => {

@@ -1,8 +1,9 @@
 require('source-map-support').install();
 
-import { readdir, stat,  } from 'fs';
+import { readdir, stat } from 'fs';
 import { join } from 'path';
-import { getConfig } from './config';
+import { Action } from './action';
+import { Handler } from './handler';
 
 /**
  * Handles traversing the actions passed in.
@@ -159,138 +160,15 @@ export class Switch {
      */
     handleFile () {
         let file = this.path + '.js';
-        let action;
 
-        try {
-            // Get the action files Action class and initialize it
-            let NextAction = require(file).default;
-            action = new NextAction(this.action, this.setup);
-        } catch (err) {
-            // If it doesn't exist, the action is set up wrong
-            console.log(`Unable to load action "${this.action}"`);
-            action = new Action(this.action, this.setup);
-        }
+        // Get the action files Action class and initialize it
+        let NextAction = require(file).default;
+        let action = new NextAction(this.action, this.setup);
 
-        // Run the action
         action.run();
     }
 }
 
-/**
- * The action class. This is meant to be used by action files.
- * Default methods and values are here, but this is meant to be
- * extended upon.
- * 
- * @param   name    The name of the action
- * @param   setup   The final setup object
- */
-export class Action {
-    description: string;
-    name: string;
-    setup: object;
-    args: string[];
-
-    constructor(name: string, setup: object) {
-        this.name = name;
-        this.setup = setup;
-        this.args = process.argv;
-    }
-
-    /**
-     * The code to be run for the executable. Overwrite this in your action.
-     */
-    run() {
-        console.log(`No actions have been defined for action "${this.name}"`);
-    }
-}
-
-/**
- * The handler class. This is meant to be using in index files of
- * a directory and extended upon.
- * 
- * @param   cwd         The current directory of the action
- * @param   nextAction  The next action to be run
- */
-export class Handler {
-    cwd: string;
-    description: string = '';
-    nextAction: string | undefined;
-
-    constructor(cwd: string, next_action: string | undefined) {
-        this.cwd = cwd;
-        this.nextAction = next_action;
-    }
-
-    /**
-     * Can the handler be run? Checks to see if there's a nextAction by
-     * default since the handler doesn't run actions. Overwite this if
-     * you need a more stringent check.
-     */
-    canRun(): boolean {
-        return this.nextAction !== undefined;
-    }
-
-    /**
-     * Every directories handler can build upon the setup object to make
-     * child actions/handlers more streamlined.
-     * 
-     * @param setup The current setup object as of current
-     */
-    setup (setup: any): Promise<any> | object {
-        return setup;
-    }
-
-    /**
-     * Get the description of an action if availible.
-     * 
-     * @param file The file of the action
-     */
-    private getDescription (file: string) {
-        let module_path = join(this.cwd, file);
-        let mod;
-        let description = '';
-
-        try {
-            mod = require(module_path);
-            if (mod.default) {
-                description = new mod.default().description;
-            }
-        } catch (e) { }
-
-        return description;
-    }
-
-    /**
-     * Print a help message. This by default prints all availible child commands.
-     */
-    printHelp() {
-        console.log('\nAvailable commands: \n');
-
-        readdir(this.cwd, (err, files) => {
-            if (err) return console.log(err);
-            
-            getConfig().then((config) => {
-                let excluded = new RegExp(config.excludes);
-
-                for (let i = 0; i < files.length; i++) {
-                    let command = files[i];
-
-                    // Don't show excluded files
-                    if (excluded.test(command)) continue;
-
-                    let description = this.getDescription(command);
-
-                    // Get rid of the extension of files
-                    let match = command.match(/(.*).js/)
-                    if (match) command = match[1];
-
-                    // Print the log
-                    console.log(`  ${command}\t${description}`);
-                }
-            });
-
-            // Print and extra newline
-            console.log();
-        });
-    }
-}
+export { Action, IActionArg, IActionInput, IActionSetup } from './action';
+export { Handler } from './handler';
+export { Option } from './options';

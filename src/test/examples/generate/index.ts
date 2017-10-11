@@ -1,4 +1,4 @@
-import { Handler } from '../../../index';
+import { Handler } from '../../../switch';
 
 export default class GenerateHandler extends Handler {
     constructor(cwd: string, next_action: string | undefined) {

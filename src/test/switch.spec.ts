@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Switch } from '../index';
+import { Switch } from '../switch';
 import { join } from 'path';
 
 describe('The Handler Object', () => {

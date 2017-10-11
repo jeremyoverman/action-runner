@@ -1,4 +1,4 @@
-import { Action } from '../../../index';
+import { Action } from '../../../switch';
 
 export default class TemplateAction extends Action {
     constructor(name: string, setup: object) {

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Action } from '../index';
+import { Action } from '../switch';
 
 describe('The Action Object', () => {
     let action: Action;
