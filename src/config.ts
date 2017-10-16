@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs';
+import { readFile, writeFile, mkdir, exists } from 'fs';
 import { join } from 'path';
 
 const CONFIG_FILE = join(__dirname, 'config.json');
@@ -21,14 +21,16 @@ export interface IActions {
 
 export interface IConfig {
     actions: IActions;
-    excludes: string
+    excludes: string;
+    actionRoot: string
 }
 
 export const default_config: IConfig = {
     actions: {
         runner: join(__dirname, 'runner')
     },
-    excludes: "^index.js$|.map$|^node_modules$|.json$|^options$"
+    excludes: "^index.js$|.map$|^node_modules$|.json$|^options$",
+    actionRoot: join(__dirname, 'installed_actions')
 };
 
 export function registerNewAction (name: string, path: string) {
@@ -54,6 +56,22 @@ export function createConfig(): Promise<IConfig> {
     return replaceConfig(default_config);
 }
 
+export function createActionsDirectory(directory: string): Promise<string|null> {
+    return new Promise((resolve, reject) => {
+        exists(directory, doesExist => {
+            if (!doesExist) {
+                mkdir(directory, err => {
+                    if (err) return reject(err);
+
+                    resolve(directory);
+                });
+            } else {
+                resolve();
+            }
+        })
+    });
+}
+
 export function getConfig(): Promise<IConfig> {
     return new Promise((resolve, reject) => {
         let config: IConfig;
@@ -70,3 +88,13 @@ export function getConfig(): Promise<IConfig> {
         }
     });
 }
+
+getConfig().then(config => {
+    createActionsDirectory(config.actionRoot)
+        .then((directory) => {
+            if (directory) console.log(`Created base actions directory at "${directory}"`);
+        })
+        .catch((err) => {
+            console.log(`Failed to create actions directory: ${err}`);
+        });
+});
