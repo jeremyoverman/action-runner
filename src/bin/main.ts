@@ -39,9 +39,11 @@ function getAllActions (config: IConfig): Promise<IActions> {
         let actions: IActions = Object.assign({}, config.actions);
 
         readdir(config.actionRoot, (err, dirs) => {
-            dirs.forEach((action) => {
-                actions[action] = join(config.actionRoot, action);
-            });
+            if (!err) {
+                dirs.forEach((action) => {
+                    actions[action] = join(config.actionRoot, action);
+                });
+            }
 
             resolve(actions);
         });

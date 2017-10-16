@@ -26,9 +26,7 @@ export interface IConfig {
 }
 
 export const default_config: IConfig = {
-    actions: {
-        runner: join(__dirname, 'runner')
-    },
+    actions: { },
     excludes: "^index.js$|.map$|^node_modules$|.json$|^options$",
     actionRoot: join(__dirname, 'installed_actions')
 };
