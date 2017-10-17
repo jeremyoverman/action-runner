@@ -1,6 +1,7 @@
 import { join } from 'path';
 import { getConfig } from './config';
 import { readdir } from 'fs'
+import { info, tabular } from './helper';
 
 /**
  * The handler class. This is meant to be using in index files of
@@ -58,37 +59,46 @@ export class Handler {
         return description;
     }
 
+    getActionsTable () {
+        let actions: any = {};
+
+        return new Promise((resolve, reject) => {
+            readdir(this.cwd, (err, files) => {
+                if (err) return reject (err);
+                
+                getConfig().then((config) => {
+                    let excluded = new RegExp(config.excludes);
+
+                    for (let i = 0; i < files.length; i++) {
+                        let command = files[i];
+
+                        // Don't show excluded files
+                        if (excluded.test(command)) continue;
+
+                        let description = this.getDescription(command);
+
+                        // Get rid of the extension of files
+                        let match = command.match(/(.*).js/)
+                        if (match) command = match[1];
+
+                        // Print the log
+                        actions[command] = description;
+                    }
+
+                    resolve(tabular(actions));
+                })
+            });
+        });
+    }
+
     /**
      * Print a help message. This by default prints all availible child commands.
      */
     printHelp() {
-        console.log('\nAvailable commands:');
+        let actions: any = {};
 
-        readdir(this.cwd, (err, files) => {
-            if (err) return console.log(err);
-            
-            getConfig().then((config) => {
-                let excluded = new RegExp(config.excludes);
-
-                for (let i = 0; i < files.length; i++) {
-                    let command = files[i];
-
-                    // Don't show excluded files
-                    if (excluded.test(command)) continue;
-
-                    let description = this.getDescription(command);
-
-                    // Get rid of the extension of files
-                    let match = command.match(/(.*).js/)
-                    if (match) command = match[1];
-
-                    // Print the log
-                    console.log(`  ${command}\t${description}`);
-                }
-            });
-
-            // Print and extra newline
-            console.log();
+        this.getActionsTable().then((table: string) => {
+            info('Available Actions', table);
         });
     }
 }

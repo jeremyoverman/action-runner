@@ -5,6 +5,7 @@ import { join } from 'path';
 import { readdir } from 'fs';
 import { getConfig, IActions, IConfig } from '../config';
 import { Options } from '../options';
+import { tabular, error } from '../helper';
 
 /**
  * Get rid of the first to arguments under process.argv
@@ -14,19 +15,13 @@ function cleanArgs() {
     process.argv.shift();
 }
 
-/**
- * Print a helper message with all available actions
- * 
- * @param actions The IActions object
- */
 function printHelp (actions: IActions) {
-    console.log('\nParent action not found\n\nAvailable Actions:');
+    error('Parent action not found', `
 
-    for (let action in actions) {
-        console.log(`  ${action}\t${actions[action]}`);
-    }
+        Available actions:
 
-    console.log();
+        ${tabular(actions)}
+    `);
 }
 
 /**
