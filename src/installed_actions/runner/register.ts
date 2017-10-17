@@ -1,5 +1,5 @@
-import { Action, IActionSetup } from '../switch';
-import { registerNewAction } from '../config';
+import { Action, IActionSetup } from '../../switch';
+import { registerNewAction } from '../../config';
 
 export default class RegisterAction extends Action {
     description = 'Register a new action';

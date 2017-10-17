@@ -1,5 +1,5 @@
-import { Action, IActionSetup }  from '../switch';
-import { removeAction } from '../config';
+import { Action, IActionSetup }  from '../../switch';
+import { removeAction } from '../../config';
 
 export default class UnregisterAction extends Action {
     description = 'Remove an existing action';
