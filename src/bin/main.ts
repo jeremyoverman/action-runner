@@ -15,6 +15,11 @@ function cleanArgs() {
     process.argv.shift();
 }
 
+/**
+ * Print a help message
+ * 
+ * @param actions The available actions
+ */
 function printHelp (actions: IActions) {
     log(messages.parent_action_not_found);
     info(messages.available_actions, tabular(actions));
