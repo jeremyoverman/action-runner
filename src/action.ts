@@ -1,4 +1,5 @@
 import { IOptionParams } from './options';
+import { info, messages, log, tabular } from './helper';
 
 export interface IActionArg {
     name: string;
@@ -43,7 +44,7 @@ export class Action {
             if (!next_arg) return;
 
             if (arg.optional && !next_arg.optional) {
-                console.log('Error: optional arguments must be at the end of args');
+                log(messages.optional_args_must_be_at_end);
                 process.exit(1);
             }
         });
@@ -63,7 +64,7 @@ export class Action {
             let value = process.argv[idx];
 
             if (value === undefined && !arg.optional) {
-                 this.printUsage();
+                 this.printHelp();
                  process.exit(1);
             }
 
@@ -73,7 +74,7 @@ export class Action {
         return inputs;
     }
 
-    printUsage () {
+    getUsage () {
         let usage_string = `\nUsage: ${this.name} `;
 
         this.args.forEach(arg => {
@@ -82,19 +83,28 @@ export class Action {
             usage_string += str + ' ';
         });
 
-        console.log(usage_string + '\n');
+        usage_string += '\n\n';
 
+        let descriptions: any = {};
         this.args.forEach(arg => {
             if (arg.description) {
-                console.log(`  ${arg.name}\t${arg.description}`);
+                descriptions[arg.name] = arg.description;
             }
         });
+
+        usage_string += tabular(descriptions);
+
+        return usage_string;
+    }
+
+    printHelp () {
+        info(`Action: ${this.name}`, this.getUsage());
     }
 
     /**
      * The code to be run for the executable. Overwrite this in your action.
      */
     run() {
-        console.log(`No actions have been defined for action "${this.name}"`);
+        log(messages.no_actions_defined);
     }
 }

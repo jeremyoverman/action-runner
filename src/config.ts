@@ -1,19 +1,8 @@
-import { readFile, writeFile, mkdir, exists } from 'fs';
+import { writeFile, mkdir, exists } from 'fs';
 import { join } from 'path';
+import { messages, log } from './helper';
 
 const CONFIG_FILE = join(__dirname, 'config.json');
-
-function replaceConfig (new_config: IConfig): Promise<IConfig> {
-    return new Promise ((resolve, reject) => {
-        let new_json = JSON.stringify(new_config, null, 4);
-
-        writeFile(CONFIG_FILE, new_json, (err) => {
-            if (err) reject(err);
-
-            resolve(new_config);
-        });
-    });
-};
 
 export interface IActions {
     [action: string]: string;
@@ -22,36 +11,55 @@ export interface IActions {
 export interface IConfig {
     actions: IActions;
     excludes: string;
-    actionRoot: string
+    actionRoot: string;
+    locale: string;
 }
 
-export const default_config: IConfig = {
+export const DEFAULT_CONFIG: IConfig = {
     actions: { },
     excludes: "^index.js$|.map$|^node_modules$|.json$|^options$",
-    actionRoot: join(__dirname, 'installed_actions')
+    actionRoot: join(__dirname, 'installed_actions'),
+    locale: 'en-us'
+};
+
+function replaceConfig (new_config: IConfig): Promise<IConfig> {
+    return new Promise((resolve, reject) => {
+        let new_json = JSON.stringify(new_config, null, 4);
+
+        writeFile(CONFIG_FILE, new_json, (err) => {
+            resolve(new_config);
+        });
+    });
 };
 
 export function registerNewAction (name: string, path: string) {
     if (!name || !path) return false;
 
-    getConfig().then((config) => {
-        config.actions[name] = path;
-        replaceConfig(config);
-    });
+    let config = getConfig();
+    config.actions[name] = path;
+
+    replaceConfig(config);
 }
 
 export function removeAction (name: string) {
     if (!name) return false;
 
-    getConfig().then((config) => {
-        delete config.actions[name];
+    let config = getConfig()
+    delete config.actions[name];
 
-        replaceConfig(config);
-    });
+    replaceConfig(config);
 }
 
 export function createConfig(): Promise<IConfig> {
-    return replaceConfig(default_config);
+    createActionsDirectory(DEFAULT_CONFIG.actionRoot)
+        .then((directory) => {
+            if (directory) log(messages.create_base_directory, directory);
+        })
+        .catch((err) => {
+            log(messages.create_base_directory_fail, err);
+        });
+
+    return replaceConfig(DEFAULT_CONFIG);
 }
 
 export function createActionsDirectory(directory: string): Promise<string|null> {
@@ -70,29 +78,15 @@ export function createActionsDirectory(directory: string): Promise<string|null> 
     });
 }
 
-export function getConfig(): Promise<IConfig> {
-    return new Promise((resolve, reject) => {
-        let config: IConfig;
-
-        try {
-            config = Object.assign(default_config, require(CONFIG_FILE));
-            resolve(config);
-        } catch (e) {
-            console.log('Config does not exist. Creating new one...');
-
-            createConfig().then((con: IConfig) => {
-                resolve(con);
-            });
-        }
-    });
+export function configExists () {
+    try {
+        require.resolve(CONFIG_FILE);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
-getConfig().then(config => {
-    createActionsDirectory(config.actionRoot)
-        .then((directory) => {
-            if (directory) console.log(`Created base actions directory at "${directory}"`);
-        })
-        .catch((err) => {
-            console.log(`Failed to create actions directory: ${err}`);
-        });
-});
+export function getConfig() {
+    return Object.assign(DEFAULT_CONFIG, require(CONFIG_FILE));
+}

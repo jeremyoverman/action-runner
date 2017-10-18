@@ -1,6 +1,7 @@
 import { join } from 'path';
 import { getConfig } from './config';
 import { readdir } from 'fs'
+import { info, messages, tabular } from './helper';
 
 /**
  * The handler class. This is meant to be using in index files of
@@ -58,16 +59,14 @@ export class Handler {
         return description;
     }
 
-    /**
-     * Print a help message. This by default prints all availible child commands.
-     */
-    printHelp() {
-        console.log('\nAvailable commands:');
+    getActionsTable () {
+        let actions: any = {};
 
-        readdir(this.cwd, (err, files) => {
-            if (err) return console.log(err);
-            
-            getConfig().then((config) => {
+        return new Promise((resolve, reject) => {
+            readdir(this.cwd, (err, files) => {
+                if (err) return reject (err);
+                
+                let config = getConfig();
                 let excluded = new RegExp(config.excludes);
 
                 for (let i = 0; i < files.length; i++) {
@@ -83,12 +82,22 @@ export class Handler {
                     if (match) command = match[1];
 
                     // Print the log
-                    console.log(`  ${command}\t${description}`);
+                    actions[command] = description;
                 }
-            });
 
-            // Print and extra newline
-            console.log();
+                resolve(tabular(actions));
+            });
+        });
+    }
+
+    /**
+     * Print a help message. This by default prints all availible child commands.
+     */
+    printHelp() {
+        let actions: any = {};
+
+        this.getActionsTable().then((table: string) => {
+            info(messages.available_actions, table);
         });
     }
 }
