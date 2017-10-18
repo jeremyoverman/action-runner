@@ -4,6 +4,7 @@ import { readdir, stat } from 'fs';
 import { join } from 'path';
 import { Action } from './action';
 import { Handler } from './handler';
+import { log, messages } from './helper';
 
 /**
  * Handles traversing the actions passed in.
@@ -105,7 +106,7 @@ export class Switch {
             }
         })
         .catch((err) => {
-            console.log(err);
+            log(err);
         });
     }
 
@@ -122,8 +123,8 @@ export class Switch {
                 let [ isDirectory, isFile ] = values;
 
                 // Make sure the action is either a file or a directory, but not both
-                if (!isDirectory && !isFile) return reject('Action does not exist');
-                if (isDirectory && isFile) return reject("You can't have a directory and action with the same name in the same directory");
+                if (!isDirectory && !isFile) return reject(messages.action_does_not_exist);
+                if (isDirectory && isFile) return reject(messages.cant_have_duplicate_action);
 
                 this.type = isDirectory ? 'directory' : 'file';
 

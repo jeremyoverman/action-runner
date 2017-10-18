@@ -1,5 +1,5 @@
 import { IOptionParams } from './options';
-import { info, error, tabular } from './helper';
+import { info, messages, log, tabular } from './helper';
 
 export interface IActionArg {
     name: string;
@@ -44,7 +44,7 @@ export class Action {
             if (!next_arg) return;
 
             if (arg.optional && !next_arg.optional) {
-                error(null, 'Error: optional arguments must be at the end of args');
+                log(messages.optional_args_must_be_at_end);
                 process.exit(1);
             }
         });
@@ -105,6 +105,6 @@ export class Action {
      * The code to be run for the executable. Overwrite this in your action.
      */
     run() {
-        info('No Action', `No actions have been defined for action "${this.name}"`);
+        log(messages.no_actions_defined);
     }
 }

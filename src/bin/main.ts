@@ -3,9 +3,9 @@
 import { Switch, IActionSetup }  from '../switch';
 import { join } from 'path';
 import { readdir } from 'fs';
-import { getConfig, IActions, IConfig } from '../config';
+import { getConfig, configExists, createConfig, IActions, IConfig } from '../config';
 import { Options } from '../options';
-import { tabular, error } from '../helper';
+import { tabular, log, info, messages } from '../helper';
 
 /**
  * Get rid of the first to arguments under process.argv
@@ -16,12 +16,8 @@ function cleanArgs() {
 }
 
 function printHelp (actions: IActions) {
-    error('Parent action not found', `
-
-        Available actions:
-
-        ${tabular(actions)}
-    `);
+    log(messages.parent_action_not_found);
+    info(messages.available_actions, tabular(actions));
 }
 
 /**
@@ -89,8 +85,17 @@ function run (config: IConfig) {
     });
 }
 
-// Get the config
-let config = getConfig().then((config) => {
+let config: IConfig;
+
+if (configExists()) {
+    // Get the config
+    config = getConfig();
+
     // Then run the runner function
     run(config);
-});
+} else {
+    createConfig().then((config) => {
+        log(messages.create_new_config);
+        run(config);
+    });
+}

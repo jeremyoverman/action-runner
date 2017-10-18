@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { getConfig } from './config';
 import { readdir } from 'fs'
-import { info, tabular } from './helper';
+import { info, messages, tabular } from './helper';
 
 /**
  * The handler class. This is meant to be using in index files of
@@ -66,27 +66,26 @@ export class Handler {
             readdir(this.cwd, (err, files) => {
                 if (err) return reject (err);
                 
-                getConfig().then((config) => {
-                    let excluded = new RegExp(config.excludes);
+                let config = getConfig();
+                let excluded = new RegExp(config.excludes);
 
-                    for (let i = 0; i < files.length; i++) {
-                        let command = files[i];
+                for (let i = 0; i < files.length; i++) {
+                    let command = files[i];
 
-                        // Don't show excluded files
-                        if (excluded.test(command)) continue;
+                    // Don't show excluded files
+                    if (excluded.test(command)) continue;
 
-                        let description = this.getDescription(command);
+                    let description = this.getDescription(command);
 
-                        // Get rid of the extension of files
-                        let match = command.match(/(.*).js/)
-                        if (match) command = match[1];
+                    // Get rid of the extension of files
+                    let match = command.match(/(.*).js/)
+                    if (match) command = match[1];
 
-                        // Print the log
-                        actions[command] = description;
-                    }
+                    // Print the log
+                    actions[command] = description;
+                }
 
-                    resolve(tabular(actions));
-                })
+                resolve(tabular(actions));
             });
         });
     }
@@ -98,7 +97,7 @@ export class Handler {
         let actions: any = {};
 
         this.getActionsTable().then((table: string) => {
-            info('Available Actions', table);
+            info(messages.available_actions, table);
         });
     }
 }

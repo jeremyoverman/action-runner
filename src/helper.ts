@@ -1,3 +1,6 @@
+import { messages, IMessage } from './lib/messages';
+import { getConfig } from './config';
+
 interface IDataObject {
     [key: string]: string;
 }
@@ -15,24 +18,6 @@ function objectToArray (data: IDataObject): string[][] {
     }
 
     return array;
-}
-
-/**
- * Create a log message. To be used internally.
- * 
- * @param header The header of the log
- * @param message The log message
- */
-function create (header: string | null, message: string): string {
-    let log: string = '\n';
-
-    message = trimLiteralSpaces(message);
-
-    if (header) log += `${header}\n${'='.repeat(header.length)}\n\n`;
-
-    log += message;
-
-    return log;
 }
 
 /**
@@ -128,11 +113,43 @@ export function trimLiteralSpaces (literal: string) {
  * Log a message with a header
  * 
  * @param header the header of the log
- * @param message the log message
+ * @param text the log message
  */
-export function info (header: string | null, message: string): void {
-    let log = create(header, message);
+export function info (header: string | IMessage | null, text: string | IMessage, ...args: string[]): void {
+    let log: string = '\n';
+
+    if (typeof text === 'string') text = trimLiteralSpaces(text);
+    else text = getMessage(text, ...args);
+
+    if (header) {
+        if (typeof header !== 'string') header = getMessage(header);
+
+        log += `${header}\n${'='.repeat(header.length)}\n\n`;
+    }
+
+    log += text;
+
     console.log(log);
+}
+
+/**
+ * Get a message from messges and fill it
+ * 
+ * @param message The string to be filled
+ * @param args The arguments to be placed
+ */
+export function getMessage (message: IMessage, ...args: string[]) {
+    let config = getConfig();
+    let locale = config.locale;
+
+    let text = message.text[locale] || message.text['en-us'];
+
+    args.forEach((arg, idx) => {
+        let regex = new RegExp(`\\{${idx}\\}`, 'g');
+        text = text.replace(regex, arg);
+    });
+
+    return text;
 }
 
 /**
@@ -141,18 +158,15 @@ export function info (header: string | null, message: string): void {
  * @param header the header of the log
  * @param message the log message
  */
-export function error (header: string | null, message: string): void {
-    let log = create(header, message);
-    console.error(log);
+export function log (message: IMessage, ...args: string[]): void {
+    let text = getMessage(message, ...args);
+    let id = message.id.toString();
+
+    let code = 'AR' + '0'.repeat(4 - id.length) + id;
+
+    text = `${code}: ${text}`;
+
+    console.log(text);
 }
 
-/**
- * Log a warning with a header
- * 
- * @param header the header of the log
- * @param message the log message
- */
-export function warn (header: string | null, message: string): void {
-    let log = create(header, message);
-    console.warn(log);
-}
+export { messages } from './lib/messages';
