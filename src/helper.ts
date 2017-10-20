@@ -152,13 +152,7 @@ export function getMessage (message: IMessage, ...args: string[]) {
     return text;
 }
 
-/**
- * Log an error with a header
- * 
- * @param header the header of the log
- * @param message the log message
- */
-export function log (message: IMessage, ...args: string[]): void {
+export function getLogText (message: IMessage, ...args: string[]) {
     let text = getMessage(message, ...args);
     let id = message.id.toString();
 
@@ -166,7 +160,25 @@ export function log (message: IMessage, ...args: string[]): void {
 
     text = `${code}: ${text}`;
 
+    return text;
+}
+
+/**
+ * Log an error with a header
+ * 
+ * @param header the header of the log
+ * @param message the log message
+ */
+export function log (message: IMessage, ...args: string[]): void {
+    let text = getLogText(message, ...args);
+
     console.log(text);
+}
+
+export function error (message: IMessage, ...args: string[]): void {
+    let text = getLogText(message, ...args);
+
+    throw new Error(text);
 }
 
 export { messages } from './lib/messages';

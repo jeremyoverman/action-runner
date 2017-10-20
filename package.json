@@ -7,7 +7,7 @@
     "action": "./built/bin/main.js"
   },
   "scripts": {
-    "test": "tsc & mocha ./built/test"
+    "test": "tsc & nyc node_modules/jasmine/bin/jasmine.js"
   },
   "author": "Jeremy Overman",
   "repository": {
@@ -15,11 +15,29 @@
     "url": "https://github.com/jeremyoverman/action-runner"
   },
   "license": "MIT",
+  "nyc": {
+    "all": true,
+    "include": [
+      "built/**/*.js",
+      "src/**/*.ts"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "exclude": [
+      "**/*.spec.js"
+    ]
+  },
   "devDependencies": {
     "@types/chai": "^4.0.4",
+    "@types/jasmine": "^2.6.0",
     "@types/mocha": "^2.2.43",
     "@types/node": "^8.0.31",
     "chai": "^4.1.2",
+    "istanbul": "^1.1.0-alpha.1",
+    "jasmine": "^2.8.0",
+    "nyc": "^11.2.1",
     "source-map-support": "^0.4.18"
   }
 }

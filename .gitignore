@@ -1,2 +1,4 @@
 node_modules
 built/
+coverage/
+.nyc_output/

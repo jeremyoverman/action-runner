@@ -10,7 +10,7 @@ import { tabular, log, info, messages } from '../helper';
 /**
  * Get rid of the first to arguments under process.argv
  */
-function cleanArgs() {
+export function cleanArgs() {
     process.argv.shift();
     process.argv.shift();
 }
@@ -20,7 +20,7 @@ function cleanArgs() {
  * 
  * @param actions The available actions
  */
-function printHelp (actions: IActions) {
+export function printHelp (actions: IActions) {
     log(messages.parent_action_not_found);
     info(messages.available_actions, tabular(actions));
 }
@@ -30,7 +30,7 @@ function printHelp (actions: IActions) {
  * 
  * @param config the config object
  */
-function getAllActions (config: IConfig): Promise<IActions> {
+export function getAllActions (config: IConfig): Promise<IActions> {
     return new Promise((resolve, reject) => {
         let actions: IActions = Object.assign({}, config.actions);
 
@@ -52,7 +52,7 @@ function getAllActions (config: IConfig): Promise<IActions> {
  * 
  * @param actions The IActions object
  */
-function getParentActionDirectory (actions: IActions): string | null {
+export function getParentActionDirectory (actions: IActions): string | null {
     let parentAction = process.argv.shift();
 
     if (!parentAction || !actions[parentAction]) return null;
@@ -63,7 +63,7 @@ function getParentActionDirectory (actions: IActions): string | null {
 /**
  * The main runner function
  */
-function run (config: IConfig) {
+export function run (config: IConfig) {
     // Get rid of the first two arguments
     cleanArgs();
 

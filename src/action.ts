@@ -1,5 +1,5 @@
 import { IOptionParams } from './options';
-import { info, messages, log, tabular } from './helper';
+import { info, messages, log, error, tabular } from './helper';
 
 export interface IActionArg {
     name: string;
@@ -44,8 +44,7 @@ export class Action {
             if (!next_arg) return;
 
             if (arg.optional && !next_arg.optional) {
-                log(messages.optional_args_must_be_at_end);
-                process.exit(1);
+                error(messages.optional_args_must_be_at_end);
             }
         });
 
