@@ -170,6 +170,6 @@ export class Switch {
     }
 }
 
-export { Action, IActionArg, IActionInput, IActionSetup } from './action';
+export { Action, IActionArg, IActionInputs, IActionSetup } from './action';
 export { Handler } from './handler';
 export { Option } from './options';

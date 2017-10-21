@@ -62,7 +62,13 @@ export const messages: IMessages = {
     cant_have_duplicate_action: {
         id: 9,
         text: {
-            'en-us': 'Action does not exist'
+            'en-us': 'An action and directory in the same level can\'t share a name'
+        }
+    },
+    action_called_without_correct_args: {
+        id: 10,
+        text: {
+            'en-us': 'The action was called with the incorrect number of arguments'
         }
     }
 }
