@@ -7,9 +7,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${file}",
-            "args": ["generate"],
+            "name": "Launch action",
+            "program": "${workspaceRoot}/built/bin/main.js",
+            "args": ["runner", "register"],
             "outFiles": [
                 "${workspaceRoot}/built/**/*.js"
             ]

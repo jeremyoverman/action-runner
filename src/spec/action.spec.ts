@@ -1,10 +1,16 @@
 import * as action from '../action';
 import * as helper from '../helper';
+import * as config from '../config';
 
 describe('the action module', () => {
     let _args: action.IActionArg[];
 
     beforeEach(() => {
+        let _config = config.DEFAULT_CONFIG;
+
+        spyOn(config, 'getConfig').and.returnValue(_config);
+
+        process.argv = ['test1', 'test2'];
         _args = [
             {
                 'name': 'arg1',
@@ -64,17 +70,15 @@ describe('the action module', () => {
                 'description': 'Required argument at the end'
             });
 
-            expect(() => {
-                _action.args = _args
-            }).toThrowError();
+            _action.args = _args
+
+            expect(_action.args).toEqual([]);
         });
     });
 
     describe('getting inputs', () => {
         describe('and sending the correct args', () => {
             it('should return the correct inputs', () => {
-                process.argv = ['test1', 'test2'];
-
                 let _action = new action.Action('test-action', {
                     flags: []
                 });
@@ -89,8 +93,8 @@ describe('the action module', () => {
             });
         });
 
-        describe('sending too few inputs', () => {
-            it('should print an error message and exits', () => {
+        describe('the canRun method', () => {
+            it('should return false if too few inputs', () => {
                 process.argv = ['test1'];
 
                 let _action = new action.Action('test-action', {
@@ -99,13 +103,9 @@ describe('the action module', () => {
 
                 _action.args = _args;
 
-                let printHelpSpy = spyOn(_action, 'printHelp');
+                console.log(_action.canRun());
 
-                expect(() => {
-                    _action.createInputs()
-                }).toThrowError();
-
-                expect(printHelpSpy.calls.count()).toBe(1);
+                expect(_action.canRun()).toBe(false);
             });
         });
     });
