@@ -4,7 +4,7 @@ import { readdir, stat } from 'fs';
 import { join } from 'path';
 import { Action } from './action';
 import { Handler } from './handler';
-import { log, messages } from './helper';
+import { log, error, messages, IMessage } from './helper';
 
 /**
  * Handles traversing the actions passed in.
@@ -105,8 +105,8 @@ export class Switch {
                 handler.printHelp();
             }
         })
-        .catch((err) => {
-            log(err);
+        .catch((err: IMessage) => {
+            error(err);
         });
     }
 
@@ -166,7 +166,15 @@ export class Switch {
         let NextAction = require(file).default;
         let action = new NextAction(this.action, this.setup);
 
-        action.run();
+        if (!action.canRun()) {
+            error(messages.action_called_without_correct_args);
+            action.printHelp();
+        } else if (!action.argsValid()) {
+            error(messages.optional_args_must_be_at_end);
+        } else {
+            action.createInputs();
+            action.run();
+        }
     }
 }
 

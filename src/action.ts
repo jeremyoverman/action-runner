@@ -36,20 +36,36 @@ export class Action {
     constructor(name: string, setup: IActionSetup) {
         this.name = name;
         this.setup = setup;
-        this.inputs = this.createInputs();
-        this.args = [];
     }
 
-    set args (args: IActionArg[]) {
+    canRun () {
+        let required = this.args.filter((arg) => {
+            return !arg.optional;
+        });
+
+        return required.length == process.argv.length;
+    }
+
+    argsValid (args: IActionArg[]) {
+        let valid = true;
+
         args.forEach((arg, idx) => {
             let next_arg = args[idx + 1];
 
             if (!next_arg) return;
 
             if (arg.optional && !next_arg.optional) {
-                error(messages.optional_args_must_be_at_end);
+                valid = false;
             }
         });
+
+        return valid;
+    }
+
+    set args (args: IActionArg[]) {
+        if (!Array.isArray(args) || !this.argsValid(args)) {
+            args = [];
+        }
 
         this._args = args;
     }
@@ -65,13 +81,10 @@ export class Action {
             let arg = this.args[idx];
             let value = process.argv[idx];
 
-            if (value === undefined && !arg.optional) {
-                this.printHelp();
-                error(messages.action_called_without_correct_args);
-            }
-
             inputs[arg.name] = process.argv[idx];
         }
+
+        this.inputs = inputs;
 
         return inputs;
     }
@@ -79,18 +92,22 @@ export class Action {
     getUsage () {
         let usage_string = `\nUsage: ${this.name} `;
 
-        this.args.forEach(arg => {
-            let str = arg.optional ? `[${arg.name}]` : arg.name;
+        if (this.args) {
+            this.args.forEach(arg => {
+                let str = arg.optional ? `[${arg.name}]` : arg.name;
 
-            usage_string += str + ' ';
-        });
+                usage_string += str + ' ';
+            });
+        }
 
         usage_string += '\n\n';
 
         let descriptions: any = {};
-        this.args.forEach(arg => {
-            descriptions[arg.name] = arg.description;
-        });
+        if (this.args) {
+            this.args.forEach(arg => {
+                descriptions[arg.name] = arg.description;
+            });
+        }
 
         usage_string += tabular(descriptions);
 
