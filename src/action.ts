@@ -8,7 +8,7 @@ export interface IActionArg {
     value?: any;
 }
 
-export interface IActionInput {
+export interface IActionInputs {
     [name: string]: string;
 }
 
@@ -31,10 +31,13 @@ export class Action {
     setup: IActionSetup;
     private _args: IActionArg[];
     usage: string;
+    inputs: IActionInputs;
 
     constructor(name: string, setup: IActionSetup) {
         this.name = name;
         this.setup = setup;
+        this.inputs = this.createInputs();
+        this.args = [];
     }
 
     set args (args: IActionArg[]) {
@@ -55,16 +58,16 @@ export class Action {
         return this._args;
     }
 
-    get inputs () {
-        let inputs: IActionInput = {};
+    createInputs () {
+        let inputs: IActionInputs = {};
 
         for (let idx in this.args) {
             let arg = this.args[idx];
             let value = process.argv[idx];
 
             if (value === undefined && !arg.optional) {
-                 this.printHelp();
-                 process.exit(1);
+                this.printHelp();
+                error(messages.action_called_without_correct_args);
             }
 
             inputs[arg.name] = process.argv[idx];
@@ -86,9 +89,7 @@ export class Action {
 
         let descriptions: any = {};
         this.args.forEach(arg => {
-            if (arg.description) {
-                descriptions[arg.name] = arg.description;
-            }
+            descriptions[arg.name] = arg.description;
         });
 
         usage_string += tabular(descriptions);
