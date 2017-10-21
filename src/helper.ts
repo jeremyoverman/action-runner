@@ -80,8 +80,11 @@ export function trimLiteralSpaces (literal: string) {
     });
 
     if (split[0] === '') split.shift();
-    if (!split[split.length - 1].trim().length) split.pop();
-    if (!split[split.length - 1].trim().length) split.pop();
+
+    while (split[split.length - 1]) {
+        if (!split[split.length - 1].trim().length) split.pop();
+        else break;
+    }
 
     split.forEach((line, idx) => {
         line = line.replace(/\s*$/, '');
@@ -178,7 +181,7 @@ export function log (message: IMessage, ...args: string[]): void {
 export function error (message: IMessage, ...args: string[]): void {
     let text = getLogText(message, ...args);
 
-    throw new Error(text);
+    console.error(text);
 }
 
-export { messages } from './lib/messages';
+export { messages, IMessage } from './lib/messages';

@@ -7,6 +7,9 @@ import { getConfig, configExists, createConfig, IActions, IConfig } from '../con
 import { Options } from '../options';
 import { tabular, log, info, messages } from '../helper';
 
+// For development - log unhandled Promise rejections
+// process.on('unhandledRejection', r => console.log(r))
+
 /**
  * Get rid of the first to arguments under process.argv
  */

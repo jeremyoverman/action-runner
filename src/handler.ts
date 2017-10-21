@@ -1,4 +1,4 @@
-import { join } from 'path';
+import * as path from 'path';
 import { getConfig } from './config';
 import { readdir } from 'fs'
 import { info, messages, tabular } from './helper';
@@ -45,7 +45,7 @@ export class Handler {
      * @param file The file of the action
      */
     private getDescription (file: string) {
-        let module_path = join(this.cwd, file);
+        let module_path = path.resolve(path.join(this.cwd, file));
         let mod;
         let description = '';
 
@@ -59,7 +59,7 @@ export class Handler {
         return description;
     }
 
-    getActionsTable () {
+    getActionsTable (): Promise<string> {
         let actions: any = {};
 
         return new Promise((resolve, reject) => {
@@ -81,11 +81,13 @@ export class Handler {
                     let match = command.match(/(.*).js/)
                     if (match) command = match[1];
 
-                    // Print the log
+                    // Add the desecription to the actions object
                     actions[command] = description;
                 }
 
-                resolve(tabular(actions));
+                let table = tabular(actions);
+
+                resolve(table);
             });
         });
     }
@@ -96,8 +98,13 @@ export class Handler {
     printHelp() {
         let actions: any = {};
 
-        this.getActionsTable().then((table: string) => {
-            info(messages.available_actions, table);
+        return new Promise((resolve, reject) => {
+            this.getActionsTable().then((table: string) => {
+                info(messages.available_actions, table);
+                resolve();
+            }).catch((err: Error) => {
+                reject(err);
+            });
         });
     }
 }

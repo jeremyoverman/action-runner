@@ -1,0 +1,1 @@
+throw new Error('This will break when required from handler');
