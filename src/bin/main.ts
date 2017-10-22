@@ -5,7 +5,7 @@ import { join } from 'path';
 import { readdir } from 'fs';
 import { getConfig, configExists, createConfig, IActions, IConfig } from '../config';
 import { Options } from '../options';
-import { tabular, log, info, messages } from '../helper';
+import { tabular, log, info, messages, error, IMessage } from '../helper';
 
 // For development - log unhandled Promise rejections
 // process.on('unhandledRejection', r => console.log(r))
@@ -84,7 +84,9 @@ export function run (config: IConfig) {
             setup = options.parseOptions();
 
             let sw = new Switch('', parentActionDirectory, setup);
-            sw.handleNextAction();
+            sw.handleNextAction().catch((msg: IMessage) => {
+                error(msg);
+            });
         } else {
             // If we couldn't get a parent directory, then then the action
             // doesn't exist in the config.

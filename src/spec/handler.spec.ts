@@ -8,6 +8,7 @@ describe('the handler class', () => {
     beforeEach(() => {
         let _config = config.DEFAULT_CONFIG;
 
+        spyOn(helper, 'tabular').and.returnValue('');
         spyOn(config, 'getConfig').and.returnValue(_config);
     });
 
@@ -41,7 +42,6 @@ describe('the handler class', () => {
                 expect(infoSpy.calls.count()).toBe(1);
                 done();
             }).catch((err: Error) => {
-                console.log(err);
                 done();
             });
         });
