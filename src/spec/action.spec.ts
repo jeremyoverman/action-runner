@@ -8,6 +8,7 @@ describe('the action module', () => {
     beforeEach(() => {
         let _config = config.DEFAULT_CONFIG;
 
+        spyOn(helper, 'tabular').and.returnValue('');
         spyOn(config, 'getConfig').and.returnValue(_config);
 
         process.argv = ['test1', 'test2'];
@@ -102,8 +103,6 @@ describe('the action module', () => {
                 });
 
                 _action.args = _args;
-
-                console.log(_action.canRun());
 
                 expect(_action.canRun()).toBe(false);
             });

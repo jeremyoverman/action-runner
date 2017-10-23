@@ -172,16 +172,22 @@ export function getLogText (message: IMessage, ...args: string[]) {
  * @param header the header of the log
  * @param message the log message
  */
-export function log (message: IMessage, ...args: string[]): void {
-    let text = getLogText(message, ...args);
-
-    console.log(text);
+export function log (message: IMessage | string, ...args: string[]): void {
+    if (typeof message === 'string') {
+        console.log(message);
+    } else {
+        let text = getLogText(message, ...args);
+        console.log(text);
+    }
 }
 
-export function error (message: IMessage, ...args: string[]): void {
-    let text = getLogText(message, ...args);
-
-    console.error(text);
+export function error (message: IMessage | Error, ...args: string[]): void {
+    if (message instanceof Error) {
+        console.log(message);
+    } else {
+        let text = getLogText(message, ...args);
+        console.error(text);
+    }
 }
 
 export { messages, IMessage } from './lib/messages';

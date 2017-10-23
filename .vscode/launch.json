@@ -7,11 +7,30 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch action",
+            "name": "Launch Action",
             "program": "${workspaceRoot}/built/bin/main.js",
-            "args": ["runner", "register"],
+            "args": ["runner", "register", "test", "test2"],
             "outFiles": [
                 "${workspaceRoot}/built/**/*.js"
+            ],
+            "skipFiles": [
+                "${workspaceRoot}/nodemodules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Coverage",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [ "run", "coverage" ],
+            "outFiles": [
+                "${workspaceRoot}/built/**/*.js"
+            ],
+            "skipFiles": [
+                "${workspaceRoot}/nodemodules/**/*.js",
+                "<node_internals>/**/*.js"
             ]
         }
     ]
