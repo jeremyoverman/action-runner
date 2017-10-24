@@ -23,7 +23,6 @@
       "path": "./verifyConditions.js"
     },
     "analyzeCommits": {
-      "preset": "ESLint",
       "releaseRules": [
         { "type": "docs", "release": "patch" }
       ]
