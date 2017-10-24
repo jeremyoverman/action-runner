@@ -228,3 +228,7 @@ If an `arg` that is required is not passed into the command chain, a usage help 
 
       template      The name of the template to generate
       otherarg      Another optional argument
+
+# Contributing
+
+We welcome contributors to open issues or submit pull requests. Please check out our [contributing page](https://github.com/jeremyoverman/action-runner/blob/develop/CONTRIBUTING.md) for more information.
