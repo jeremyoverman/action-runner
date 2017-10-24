@@ -1,6 +1,5 @@
 {
   "name": "action-runner",
-  "version": "1.4.0",
   "description": "A simple command runner application",
   "main": "built/switch.js",
   "bin": {
@@ -19,6 +18,9 @@
     "url": "https://github.com/jeremyoverman/action-runner"
   },
   "license": "MIT",
+  "release": {
+    "debug": true
+  },
   "nyc": {
     "all": true,
     "include": [
@@ -41,6 +43,10 @@
     "jasmine": "^2.8.0",
     "nyc": "^11.2.1",
     "run-script-os": "^1.0.2",
+    "semantic-release": "^8.2.0",
     "source-map-support": "^0.4.18"
+  },
+  "dependencies": {
+    "typescript": "^2.5.3"
   }
 }
