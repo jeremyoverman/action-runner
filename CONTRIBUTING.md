@@ -18,7 +18,9 @@ Feature requests are also more than welcome!
 
 All branches should be made off of the develop branch unless specifically release related. Once you are finished with your branch, you must submit a pull request to be reviewed, and if successful, it will be merged back into develop.
 
-Branches should include the issue number they are related to. We will not accept any pull requests that are not tied to an underlying issue.
+Branches should include the issue number they are related to. We will not accept any pull requests that are not tied to an underlying issue. Branches should follow the follow scheme:
+
+`issue-#-short-description-of-branch`
 
 Once we are ready to release the new package, we will then merge develop into master, and our test suite will be run and, if successful, a new release will be made
 
