@@ -19,7 +19,6 @@
   },
   "license": "MIT",
   "release": {
-    "debug": true,
     "verifyConditions": {
       "path": "./verifyConditions.js"
     }
