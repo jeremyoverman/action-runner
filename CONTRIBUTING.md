@@ -24,19 +24,6 @@ Branches should include the issue number they are related to. We will not accept
 
 Once we are ready to release the new package, we will then merge develop into master, and our test suite will be run and, if successful, a new release will be made
 
-## Commits
-
-We will be following the following commit scheme:
-
-| Message  | Release Type | Description                                   | 
-|----------|--------------|-----------------------------------------------|
-| Breaking | Major        | Changes that break the current implementation |
-| Fix      | Minor        | Bug fixes                                     | 
-| Update   | Minor        | Updating features of the application          |
-| New      | Minor        | Creating new features for the application     |
-
-When you create your branch, feel free to commit as often as you like with whatever commit messages you see fit on your branch. When you submit your pull request and it is approved, the merger will squash your commits into a single commit with the correct message and merge it in.
-
 ## Compiling
 
 This project uses typescript, and files must be compiled before they can be run. To install typescript on your machine, you can run the command `npm install typescript -g`, and once installed you can compile by running the command `tsc`, or you may run `tsc -w` to watch for changes and compile of file change.
