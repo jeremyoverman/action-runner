@@ -21,6 +21,11 @@
   "release": {
     "verifyConditions": {
       "path": "./verifyConditions.js"
+    },
+    "analyzeCommits": {
+      "releaseRules": [
+        { "type": "docs", "release": "patch" }
+      ]
     }
   },
   "nyc": {
