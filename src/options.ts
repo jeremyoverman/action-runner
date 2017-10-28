@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { readdir } from 'fs';
 import { IActionSetup } from './action';
 
@@ -23,47 +23,49 @@ export interface IOptionParams {
 export class Options {
     setup: IActionSetup;
     path: string;
+    args: string[];
 
     constructor (path: string, setup: IActionSetup) {
         this.path = join(path, 'options');
         this.setup = setup;
+        this.args = process.argv;
     }
 
-    getParams (params: IOptionParam[], start: number) {
+    getParams (params: IOptionParam[]) {
         let final: IOptionParams = {};
 
         params.forEach((param, idx) => {
             let name = param.name;
-            let value = process.argv.splice(start + idx, 1)[0];
+            let value = this.args.shift();
 
-            final[name] = value;
+            if (value) final[name] = value;
         });
 
         return final;
     }
 
-    parseOptions () {
-        process.argv.forEach((arg, idx) => {
-            let match = arg.match(OPTION_REGEX);
-            if (!match) return;
+    parseOptions (): IActionSetup {
+        if (!this.args.length) return this.setup;
 
+        let match = this.args[0].match(OPTION_REGEX);
+        this.args.shift();
+
+        if (match) {
             let opt = match[1];
             this.setup.flags.push(opt);
 
-            process.argv.splice(idx, 1);
-
             let option = this.getOption(opt);
-            let params = this.getParams(option.params, idx);
+            let params = this.getParams(option.params);
 
             this.setup = option.run(params);
-        });
+        }
 
-        return this.setup;
+        return this.parseOptions();
     }
 
     getOption (opt: string): Option {
         let module_exists: boolean;
-        let file = join(this.path, opt + '.js');
+        let file = resolve(join(this.path, opt + '.js'));
 
         try {
             require.resolve(file);
