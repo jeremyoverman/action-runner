@@ -9,7 +9,9 @@
     "copy-txt": "run-script-os",
     "copy-txt:win32": "copy .\\src\\spec\\test-action\\test.txt .\\built\\spec\\test-action\\test.txt",
     "coverage": "nyc node_modules/jasmine/bin/jasmine.js",
-    "test": "npm run copy-txt & node node_modules/jasmine/bin/jasmine.js",
+    "unit-test": "node node_modules/jasmine/bin/jasmine.js --config=./jasmine-unit.json",
+    "integration-test": "node node_modules/jasmine/bin/jasmine.js --config=./jasmine-integration.json",
+    "test": "npm run copy-txt & npm run unit-test & npm run integration-test",
     "test-full": "tsc & npm run test & npm run coverage"
   },
   "author": "Jeremy Overman",

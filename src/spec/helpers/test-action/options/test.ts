@@ -1,5 +1,5 @@
-import { Option, IOptionParams } from '../../../options'
-import { IActionSetup } from '../../../action';
+import { Option, IOptionParams } from '../../../../options'
+import { IActionSetup } from '../../../../action';
 
 export default class TestOption extends Option {
     constructor (setup: IActionSetup) {

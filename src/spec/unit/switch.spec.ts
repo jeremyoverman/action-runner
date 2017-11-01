@@ -1,10 +1,10 @@
-import * as sw from '../switch';
-import * as helper from '../helper';
-import * as action from '../action';
-import * as handler from '../handler';
-import * as config from '../config';
+import * as sw from '../../switch';
+import * as helper from '../../helper';
+import * as action from '../../action';
+import * as handler from '../../handler';
+import * as config from '../../config';
 import * as path from 'path';
-import TestAction from './test-action/action';
+import TestAction from '../helpers/test-action/action';
 
 process.on('unhandledRejection', r => console.log(r))
 

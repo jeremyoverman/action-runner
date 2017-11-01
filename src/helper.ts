@@ -155,6 +155,12 @@ export function getMessage (message: IMessage, ...args: string[]) {
     return text;
 }
 
+/**
+ * Get's log text along with a log code
+ * 
+ * @param message An IMessage message
+ * @param args args to be interpolated with the string
+ */
 export function getLogText (message: IMessage, ...args: string[]) {
     let text = getMessage(message, ...args);
     let id = message.id.toString();
@@ -167,10 +173,10 @@ export function getLogText (message: IMessage, ...args: string[]) {
 }
 
 /**
- * Log an error with a header
+ * Log an IMessage or a string with console.log
  * 
- * @param header the header of the log
- * @param message the log message
+ * @param message An IMessage or string to be logged
+ * @param args Arguments to be passed to the IMessage
  */
 export function log (message: IMessage | string, ...args: string[]): void {
     if (typeof message === 'string') {
@@ -181,6 +187,12 @@ export function log (message: IMessage | string, ...args: string[]): void {
     }
 }
 
+/**
+ * Log an IMessage or a string with console.error
+ * 
+ * @param message An IMessage or string to be logged
+ * @param args Arguments to be passed to the IMessage
+ */
 export function error (message: IMessage | Error, ...args: string[]): void {
     if (message instanceof Error) {
         console.log(message);

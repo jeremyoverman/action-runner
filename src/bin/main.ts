@@ -67,45 +67,52 @@ export function getParentActionDirectory (actions: IActions): string | null {
  * The main runner function
  */
 export function run (config: IConfig) {
-    // Get rid of the first two arguments
-    cleanArgs();
+    return new Promise((resolve, reject) => {
+        // Get rid of the first two arguments
+        cleanArgs();
 
-    // Get the parent directory for the given action
-    getAllActions(config).then((actions) => {
-        let parentActionDirectory = getParentActionDirectory(actions);
+        // Get the parent directory for the given action
+        getAllActions(config).then((actions) => {
+            let parentActionDirectory = getParentActionDirectory(actions);
 
-        let setup: IActionSetup = {
-            flags: []
-        }
+            let setup: IActionSetup = {
+                flags: []
+            }
 
-        if (parentActionDirectory) {
-            // Create the Switch to handle the rest
-            let options = new Options(parentActionDirectory, setup);
-            setup = options.parseOptions();
+            if (parentActionDirectory) {
+                // Create the Switch to handle the rest
+                let options = new Options(parentActionDirectory, setup);
+                setup = options.parseOptions();
 
-            let sw = new Switch('', parentActionDirectory, setup);
-            sw.handleNextAction().catch((msg: IMessage) => {
-                error(msg);
-            });
-        } else {
-            // If we couldn't get a parent directory, then then the action
-            // doesn't exist in the config.
-            printHelp(actions);
-        }
+                let sw = new Switch('', parentActionDirectory, setup);
+                sw.handleNextAction()
+                    .then(resolve)
+                    .catch((msg: IMessage) => {
+                        error(msg);
+                    });
+            } else {
+                // If we couldn't get a parent directory, then then the action
+                // doesn't exist in the config.
+                printHelp(actions);
+                resolve();
+            }
+        });
     });
 }
 
-let config: IConfig;
+if (require.main === module) {
+    let config: IConfig;
 
-if (configExists()) {
-    // Get the config
-    config = getConfig();
+    if (configExists()) {
+        // Get the config
+        config = getConfig();
 
-    // Then run the runner function
-    run(config);
-} else {
-    createConfig().then((config) => {
-        log(messages.create_new_config);
+        // Then run the runner function
         run(config);
-    });
+    } else {
+        createConfig().then((config) => {
+            log(messages.create_new_config);
+            run(config);
+        });
+    }
 }

@@ -1,6 +1,6 @@
-import * as action from '../action';
-import * as helper from '../helper';
-import * as config from '../config';
+import * as action from '../../action';
+import * as helper from '../../helper';
+import * as config from '../../config';
 
 describe('the action module', () => {
     let _args: action.IActionArg[];

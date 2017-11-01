@@ -1,6 +1,6 @@
-import * as options from '../options';
-import * as action from '../action';
-import TestOption from './test-action/options/test';
+import * as options from '../../options';
+import * as action from '../../action';
+import TestOption from '../helpers/test-action/options/test';
 
 describe('the options module', () => {
     let test_action: string;

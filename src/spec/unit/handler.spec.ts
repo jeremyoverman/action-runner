@@ -1,6 +1,6 @@
-import * as handler from '../handler';
-import * as helper from '../helper';
-import * as config from '../config';
+import * as handler from '../../handler';
+import * as helper from '../../helper';
+import * as config from '../../config';
 
 describe('the handler class', () => {
     let test_action = './built/spec/test-action';

@@ -1,4 +1,4 @@
-import * as runner from '../../action';
+import * as runner from '../../../action';
 
 export default class TemplateAction extends runner.Action {
     constructor(name: string, setup: runner.IActionSetup) {

@@ -1,4 +1,4 @@
-import * as runner from '../../switch';
+import * as runner from '../../../switch';
 
 export default class GenerateHandler extends runner.Handler {
     constructor(cwd: string, next_action: string) {
